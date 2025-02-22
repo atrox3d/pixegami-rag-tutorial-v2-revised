@@ -2,6 +2,7 @@
 import os
 import shutil
 import typer
+import logging
 # from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -12,6 +13,7 @@ from langchain_chroma import Chroma
 import ollamamanager as om
 
 
+logger = logging.getLogger(__name__)
 app = typer.Typer(add_completion=False)
 CHROMA_PATH = ".chroma"
 DATA_PATH = "data"
@@ -29,7 +31,7 @@ def main(
     # args = parser.parse_args()
     # if args.reset:
     if reset:
-        print("✨ Clearing Database")
+        logger.info("✨ Clearing Database")
         clear_database(chroma_path)
 
     # Create (or update) the data store.
@@ -66,7 +68,7 @@ def add_to_chroma(chunks: list[Document], chroma_path:str):
     # Add or Update the documents.
     existing_items = db.get(include=[])  # IDs are always included by default
     existing_ids = set(existing_items["ids"])
-    print(f"Number of existing documents in DB: {len(existing_ids)}")
+    logger.info(f"Number of existing documents in DB: {len(existing_ids)}")
 
     # Only add documents that don't exist in the DB.
     new_chunks = []
@@ -75,12 +77,12 @@ def add_to_chroma(chunks: list[Document], chroma_path:str):
             new_chunks.append(chunk)
 
     if len(new_chunks):
-        print(f"👉 Adding new documents: {len(new_chunks)}")
+        logger.info(f"👉 Adding new documents: {len(new_chunks)}")
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
         db.add_documents(new_chunks, ids=new_chunk_ids)
         # db.persist()
     else:
-        print("✅ No new documents to add")
+        logger.info("✅ No new documents to add")
 
 
 def calculate_chunk_ids(chunks):

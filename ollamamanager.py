@@ -1,8 +1,11 @@
 import subprocess
 import socket
 import time
+import logging
 
 import defaults
+
+logger = logging.getLogger(__name__)
 
 
 def is_server_ready(host, port):
@@ -26,7 +29,7 @@ def wait_for_server(host, port, wait, max_attempts):
         attempts += 1
         if attempts > max_attempts:
             raise TimeoutError(f'no answer from server {server} after {attempts} attempts')
-        print(f'Attempt {attempts}/{max_attempts}: Waiting for ollama {server}...')
+        logger.info(f'Attempt {attempts}/{max_attempts}: Waiting for ollama {server}...')
         time.sleep(wait)
 
 
@@ -42,13 +45,13 @@ def start_ollama(
 ):
     if is_local(host):
         '''start ollama server and wait for it to be up'''
-        print('starting ollama server...')
+        logger.info('starting ollama server...')
         completed = subprocess.run('ollama serve > /dev/null 2>&1 &', shell=True, check=True)
     else:
-        print('warning: cannot start REMOTE ollama server')
+        logger.warning('cannot start REMOTE ollama server')
         completed = None
         
-    print(f'checking if the {get_server(host, port)} is up...')
+    logger.info(f'checking if the {get_server(host, port)} is up...')
     wait_for_server(host, port, wait, attempts)
     
     return completed
@@ -60,10 +63,10 @@ def stop_ollama(
 ):
     if is_local(host):
         '''stop ollama server'''
-        print('stopping ollama server...')
+        logger.info('stopping ollama server...')
         completed = subprocess.run('pkill ollama', shell=True, check=True)
     else:
-        print(f'warning: cannot stop REMOTE ollama server {get_server(host, port)}')
+        logger.warning(f'cannot stop REMOTE ollama server {get_server(host, port)}')
         completed = None
     return completed
 

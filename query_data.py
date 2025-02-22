@@ -1,5 +1,6 @@
 # import argparse
 import typer
+import logging
 # from langchain.vectorstores.chroma import Chroma
 # from langchain_community.vectorstores import Chroma
 from langchain_chroma import Chroma
@@ -10,6 +11,7 @@ from langchain_ollama import OllamaLLM
 from get_embedding_function import get_embedding_function
 import ollamamanager as om
 
+logger = logging.getLogger(__name__)
 app = typer.Typer(add_completion=False)
 CHROMA_PATH = ".chroma"
 
@@ -58,7 +60,7 @@ def query_rag(
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
-    print(formatted_response)
+    logger.info(formatted_response)
     return response_text
 
 

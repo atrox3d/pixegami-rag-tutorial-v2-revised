@@ -1,8 +1,10 @@
 import typer
+import logging
 
 import populate_database
 import query_data
 
+logger = logging.getLogger(__name__)
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -14,4 +16,5 @@ app.command('query'  )(query_data.main)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     app()
