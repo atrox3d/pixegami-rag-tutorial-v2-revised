@@ -1,7 +1,9 @@
 # from langchain_community.embeddings.ollama import OllamaEmbeddings
 # from langchain_community.embeddings.bedrock import BedrockEmbeddings
 from langchain_ollama import OllamaEmbeddings
+import tracelogger
 
+logger = tracelogger.getLogger(__name__)
 
 def get_embedding_function():
     # embeddings = BedrockEmbeddings(

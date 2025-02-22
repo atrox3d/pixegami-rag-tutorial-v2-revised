@@ -1,11 +1,11 @@
 import subprocess
 import socket
 import time
-import logging
 
 import defaults
+import tracelogger
 
-logger = logging.getLogger(__name__)
+logger = tracelogger.getLogger(__name__)
 
 
 def is_server_ready(host, port):
