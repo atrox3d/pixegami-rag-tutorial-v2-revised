@@ -19,17 +19,17 @@ class TraceLogger(logging.Logger):
             self._log(LOGGING_LEVEL, message, args, **kws)
 
 
-logging.addLevelName(
-    LOGGING_LEVEL, 
-    LOGGING_LEVEL_NAME
-)
-logging.setLoggerClass(TraceLogger)
-
-
-def getLogger(name: str | None = None) -> TraceLogger:
+def setup_tracelogger():
     logging.addLevelName(
         LOGGING_LEVEL, 
         LOGGING_LEVEL_NAME
     )
     logging.setLoggerClass(TraceLogger)
+
+
+def getLogger(name: str | None = None) -> TraceLogger:
+    setup_tracelogger()
     return logging.getLogger(name)
+
+
+setup_tracelogger()
