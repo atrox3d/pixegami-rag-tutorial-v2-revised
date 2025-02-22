@@ -2,12 +2,12 @@ import typer
 import logging
 from dotenv import load_dotenv
 
+import tracelogger
 import populate_database
 import query_data
 
 
 load_dotenv()
-logger = logging.getLogger(__name__)
 app = typer.Typer(no_args_is_help=True)
 
 
@@ -18,24 +18,11 @@ app.command('db'  )(populate_database.main)
 app.command('query'  )(query_data.main)
 
 
-MY_DEBUG_LEVEL = 15
-logging.addLevelName(MY_DEBUG_LEVEL, "trace")
-
-
-# 2. Add the custom level to the Logger class
-def trace(self, message, *args, **kws):
-    """Logs a message with level 'MYDEBUG' on this logger.
-
-    The arguments are interpreted as for debug().
-    """
-    if self.isEnabledFor(MY_DEBUG_LEVEL):
-        self._log(MY_DEBUG_LEVEL, message, args, **kws)
-
-logging.Logger.trace = trace
-
-
 if __name__ == "__main__":
-    logging.basicConfig(level=MY_DEBUG_LEVEL)
+    logger = tracelogger.getLogger(__name__)
+    logging.basicConfig(level=tracelogger.LOGGING_LEVEL)
     logger.debug('test debug')
     logger.trace('test trace')
+    
     app()
+
