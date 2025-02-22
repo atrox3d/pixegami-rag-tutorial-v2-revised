@@ -1,4 +1,5 @@
 # import argparse
+from pathlib import Path
 import typer
 # from langchain.vectorstores.chroma import Chroma
 # from langchain_community.vectorstores import Chroma
@@ -49,8 +50,13 @@ def query_rag(
 
     # Search the DB.
     results = db.similarity_search_with_score(query_text, k=5)
-
     context_text = "\n\n---\n\n".join([doc.page_content for doc, _score in results])
+    
+    documents = [d.name for d in Path('data').glob('*.pdf')]
+    logger.trace(f'{documents = }')
+    context_text += '\n\n\n\nsource pdf documents: ' + ', '.join(documents)
+    logger.trace(f'{context_text = }')
+    
     prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
