@@ -9,3 +9,4 @@ build/
 backup
 /.chroma
 /chroma
+.env
