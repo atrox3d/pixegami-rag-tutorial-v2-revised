@@ -20,7 +20,11 @@ app.command('query'  )(query_data.main)
 
 if __name__ == "__main__":
     logger = tracelogger.getLogger(__name__)
-    logging.basicConfig(level=tracelogger.LOGGING_LEVEL)
+    logging.basicConfig(
+        level=tracelogger.LOGGING_LEVEL,
+        # format='%(levelname)s:%(name)s:%(message)s'
+        format='%(levelname)-10s | %(name)20s | %(funcName)20s | %(message)s'
+    )
     logger.debug('test debug')
     logger.trace('test trace')
     

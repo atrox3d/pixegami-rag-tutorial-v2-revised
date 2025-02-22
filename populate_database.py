@@ -10,13 +10,16 @@ from langchain.schema.document import Document
 from get_embedding_function import get_embedding_function
 # from langchain.vectorstores.chroma import Chroma
 from langchain_chroma import Chroma
+
 import ollamamanager as om
+import tracelogger
 
 
-logger = logging.getLogger(__name__)
+logger = tracelogger.getLogger(__name__)
 app = typer.Typer(add_completion=False)
 CHROMA_PATH = ".chroma"
 DATA_PATH = "data"
+
 
 @app.command()
 def main(
@@ -42,7 +45,7 @@ def main(
 
 
 def load_documents(data_path:str):
-    document_loader = PyPDFDirectoryLoader(DATA_PATH)
+    document_loader = PyPDFDirectoryLoader(data_path)
     return document_loader.load()
 
 
