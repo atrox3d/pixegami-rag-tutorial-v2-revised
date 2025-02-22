@@ -1,11 +1,17 @@
-import argparse
-from langchain.vectorstores.chroma import Chroma
+# import argparse
+import typer
+# from langchain.vectorstores.chroma import Chroma
+# from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
-from langchain_community.llms.ollama import Ollama
+# from langchain_community.llms.ollama import Ollama
+from langchain_ollama import OllamaLLM
 
 from get_embedding_function import get_embedding_function
+import ollamamanager as om
 
-CHROMA_PATH = "chroma"
+app = typer.Typer(add_completion=False)
+CHROMA_PATH = ".chroma"
 
 PROMPT_TEMPLATE = """
 Answer the question based only on the following context:
@@ -17,17 +23,24 @@ Answer the question based only on the following context:
 Answer the question based on the above context: {question}
 """
 
-
-def main():
+@app.command()
+def main(
+    query_text: str,
+    model:str='mistral'
+):
     # Create CLI.
-    parser = argparse.ArgumentParser()
-    parser.add_argument("query_text", type=str, help="The query text.")
-    args = parser.parse_args()
-    query_text = args.query_text
-    query_rag(query_text)
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("query_text", type=str, help="The query text.")
+    # args = parser.parse_args()
+    # query_text = args.query_text
+    with om.OllamaServerCtx():
+        query_rag(query_text, model)
 
 
-def query_rag(query_text: str):
+def query_rag(
+    query_text: str,
+    model:str='mistral'
+):
     # Prepare the DB.
     embedding_function = get_embedding_function()
     db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
@@ -40,7 +53,7 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = Ollama(model="mistral")
+    model = OllamaLLM(model=model)
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
@@ -50,4 +63,4 @@ def query_rag(query_text: str):
 
 
 if __name__ == "__main__":
-    main()
+    app()

@@ -1,4 +1,11 @@
+__pycache__/
+venv/
+*.egg-info/
+build/
+*.log
+.venv/
 *.pyc
 .DS_Store
 backup
-chroma
+/.chroma
+/chroma
