@@ -1,5 +1,6 @@
 # import argparse
 import os
+from pathlib import Path
 import shutil
 import typer
 import logging
@@ -46,6 +47,7 @@ def main(
 
 def load_documents(data_path:str):
     document_loader = PyPDFDirectoryLoader(data_path)
+    logger.trace(f'loading documents from {data_path}...')
     return document_loader.load()
 
 
@@ -56,6 +58,7 @@ def split_documents(documents: list[Document]):
         length_function=len,
         is_separator_regex=False,
     )
+    logger.trace(f'splitting documents...')
     return text_splitter.split_documents(documents)
 
 
@@ -96,11 +99,13 @@ def calculate_chunk_ids(chunks):
     last_page_id = None
     current_chunk_index = 0
 
+
     for chunk in chunks:
+        # logger.trace(f'{chunk.metadata = }')
         source = chunk.metadata.get("source")
         page = chunk.metadata.get("page")
+        title = chunk.metadata.get('title')
         current_page_id = f"{source}:{page}"
-
         # If the page ID is the same as the last one, increment the index.
         if current_page_id == last_page_id:
             current_chunk_index += 1
@@ -113,6 +118,15 @@ def calculate_chunk_ids(chunks):
 
         # Add it to the page meta-data.
         chunk.metadata["id"] = chunk_id
+        
+        name = Path(source).stem
+        logger.trace(f'{name = }')
+        
+        title = name + ' ' + (title if title is not None else '')
+        logger.trace(f'{title = }')
+        # logger.trace(f'{current_page_id = }')
+        # logger.trace(f'{source = }')
+        # logger.trace(f'{chunk_id = }')
 
     return chunks
 
